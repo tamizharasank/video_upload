@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Video Uploading File...</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Bootstrap core CSS -->
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <style type="text/css">
+        .file-field.big .file-path-wrapper {
+  height: 3.2rem; }
+  .file-field.big .file-path-wrapper .file-path {
+    height: 3rem; }
+    </style>
+</head>
+
+<body>
+<!--Navbar-->
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>                        
+      </button>
+      <a class="navbar-brand" href="#">Video upload</a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">Home</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#"><span class="fa fa-user"></span> Sign Up</a></li>
+        <li><a href="/index"><span class="fa fa-sign-in"></span> Login</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+  
+<!--/.Navbar-->
+    <!-- Start your project here-->
+
+<div class="container">
+    <form method="post" action="/video_upload" enctype="multipart/form-data">
+            <h1 class="animated fadeIn mb-4 flex-center">Upload a video</h1>
+
+  <div class="form-group">
+    <label for="exampleInputEmail1">Instruction Name</label>
+    <input type="text" class="form-control" placeholder="name" name="name">
+  </div>
+
+  <div class="form-group">
+    <label for="exampleInputFile">Upload</label>
+    <input type="file" id="exampleInputFile" name="file">
+    <p class="help-block">Upload a video file.</p>
+  </div>
+    <div class="form-group">
+    <label for="exampleInputPassword1">Label Name</label>
+    <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Label Name" name="label">
+  </div>
+
+      <center><button type="submit" class="btn btn-default">Submit</button></center>
+
+</form>
+    
+      
+
+</div>
+    <!-- /Start your project here-->
+
+    <!-- SCRIPTS -->
+    <!-- JQuery -->
+    <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
+    <!-- Bootstrap tooltips -->
+
+    <!-- MDB core JavaScript -->
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</body>
+
+</html>
