@@ -1,4 +1,4 @@
-﻿from __future__ import unicode_literals
+from __future__ import unicode_literals
 
 import os
 import datetime
@@ -6,8 +6,10 @@ import sys
 import random
 import math
 import time
-
-
+import glob
+from PIL import Image
+import pandas as pd
+import xml.etree.ElementTree as ET
 
 
 from video_mysql import Select,Insert,Update,Delete
@@ -50,7 +52,7 @@ select=Select()
 update=Update()
 delete=Delete()
 import MySQLdb
-con=MySQLdb.connect("localhost","root","Whizible@123","videos")
+con=MySQLdb.connect("localhost","root1","whizible@123","videos")
 cursor=con.cursor()
 
 # from database import insert,select,update,delete
@@ -82,6 +84,116 @@ def after_request(response):
     return response
 
 
+@app.route("/image_to_xml")
+def xml_to_csv(path):
+    xml_list = []
+    for xml_file in glob.glob(path + '/*.xml'):
+        tree = ET.parse(xml_file)
+        root = tree.getroot()
+        for member in root.findall('object'):
+            value = (root.find('filename').text,
+                     int(root.find('size')[0].text),
+                     int(root.find('size')[1].text),
+                     member[0].text,
+                     int(member[4][0].text),
+                     int(member[4][1].text),
+                     int(member[4][2].text),
+                     int(member[4][3].text)
+                     )
+            xml_list.append(value)
+    column_name = ['filename', 'width', 'height', 'class', 'xmin', 'ymin', 'xmax', 'ymax']
+    xml_df = pd.DataFrame(xml_list, columns=column_name)
+    return xml_df
+def image_to_xml_test(fname):
+	f=fname
+	for x in glob.iglob('static/img/upload/video/training/%s/images/test/*.jpg'%(fname)):		
+		g=x.split("/")[::-1]
+		h=g[0].split(".")[0]
+		# print x.split("/")[1]
+		i=Image.open('static/img/upload/video/training/%s/images/test/%s'%(f,g[0]))
+		width,height=i.size
+		new_width=300
+		new_height=300
+		left = (width - new_width)/2
+		top = (height - new_height)/2
+		right = (width + new_width)/2
+		bottom = (height + new_height)/2
+		xml="""<annotation>
+		<folder>%s</folder>
+		<filename>%s</filename>
+		<path>/var/www/whizible.in/public_html/videos/static/img/upload/video/training/%s/images/test/%s</path>
+		<source>
+			<database>Unknown</database>
+		</source>
+		<size>
+			<width>%s</width>
+			<height>%s</height>
+			<depth>3</depth>
+		</size>
+		<segmented>0</segmented>
+		<object>
+			<name>iphone mobile</name>
+			<pose>Unspecified</pose>
+			<truncated>0</truncated>
+			<difficult>0</difficult>
+			<bndbox>
+				<xmin>%s</xmin>
+				<ymin>%s</ymin>
+				<xmax>%s</xmax>
+				<ymax>%s</ymax>
+			</bndbox>
+		</object>
+	</annotation>"""%(f,g[0],f,g[0],width,height,left,bottom,right,top)
+		file=open("static/img/upload/video/training/"+f+"/images/test/"+h+".xml","w+")
+		file.write(xml)		
+	return "success"	
+def image_to_xml_train(fname):
+	f=fname
+	for x in glob.iglob('static/img/upload/video/training/%s/images/train/*.jpg'%(fname)):		
+		g=x.split("/")[::-1]
+		h=g[0].split(".")[0]
+		# print x.split("/")[1]
+		i=Image.open('static/img/upload/video/training/%s/images/train/%s'%(f,g[0]))
+		width,height=i.size
+		new_width=300
+		new_height=300
+		left = (width - new_width)/2
+		top = (height - new_height)/2
+		right = (width + new_width)/2
+		bottom = (height + new_height)/2
+		xml="""<annotation>
+		<folder>%s</folder>
+		<filename>%s</filename>
+		<path>/var/www/whizible.in/public_html/videos/static/img/upload/video/training/%s/images/train/%s</path>
+		<source>
+			<database>Unknown</database>
+		</source>
+		<size>
+			<width>%s</width>
+			<height>%s</height>
+			<depth>3</depth>
+		</size>
+		<segmented>0</segmented>
+		<object>
+			<name>iphone mobile</name>
+			<pose>Unspecified</pose>
+			<truncated>0</truncated>
+			<difficult>0</difficult>
+			<bndbox>
+				<xmin>%s</xmin>
+				<ymin>%s</ymin>
+				<xmax>%s</xmax>
+				<ymax>%s</ymax>
+			</bndbox>
+		</object>
+	</annotation>"""%(f,g[0],f,g[0],width,height,left,bottom,right,top)
+		file=open("static/img/upload/video/training/"+f+"/images/train/"+h+".xml","w+")
+		file.write(xml)
+
+	return "success"	
+
+
+
 @app.route("/index")
 def login():
     return render_template("login.html")
@@ -110,16 +222,64 @@ def api_videotoimage(video,id,idc,vvid):
     c=cursor.fetchall()
     c=c[0][0]+1
     print vvid
+    f=video.split(".")[0]
     with closing(VideoSequence("static/img/upload/video/"+video)) as frames:
             for idx, frame in enumerate(frames[0:]):
                 s="static/img/upload/img/"+str(id)+"_"+str(c)
+                vid=video.split(".")
+                s1="static/img/upload/video/training/"+vid[0]+"/images/train/"+str(id)+"_"+str(c)
+                s2="static/img/upload/video/training/"+vid[0]+"/images/test/"+str(id)+"_"+str(c)
                 frame.save(s+"_{:04d}.jpg".format(idx+1))
+                if (idx+1)<=90:                	
+                	frame.save(s1+"_{:04d}.jpg".format(idx+1))
+                if (idx+1)<=10:
+                	frame.save(s2+"_{:04d}.jpg".format(idx+1))
                 x=str(id)+"_"+str(c)+"_{:04d}.jpg".format(idx+1)
                 order=idx+1
                 label=str(id)+"_"+str(c)+"_{:04d}".format(idx+1)
                 insert.training_images(idc,vvid,x,label,c,"Finished")
             update.video_collection(c,order,video)
+            vv=video.split(".")
+            image_to_xml_test(str(vv[0]))
+            image_to_xml_train(str(vv[0]))
+            for dir in ['test','train']:
+            	image_path = os.path.join(os.getcwd(), 'static/img/upload/video/training/{}/images/{}'.format(f,dir))
+            	xml_df = xml_to_csv(image_path)
+            	xml_df.to_csv('static/img/upload/video/training/{}/data/{}_labels.csv'.format(f,dir), index=None)
     return "Finished"
+
+@app.route("/api/api_videoto_image_new",methods=['POST','GET'])
+def api_videotoimage_new(video,id,idc,vvid):
+    cursor.execute("SELECT count(id) from video_collection where instruction_id=%s"%(id))
+    c=cursor.fetchall()
+    c=c[0][0]
+    print vvid
+    f=video.split(".")[0]
+    with closing(VideoSequence("static/img/upload/video/"+video)) as frames:
+            for idx, frame in enumerate(frames[0:]):
+                s="static/img/upload/img/"+str(id)+"_"+str(c)
+                
+                vid=video.split(".")
+                s1="static/img/upload/video/training/"+vid[0]+"/images/train/"+str(id)+"_"+str(c)
+                s2="static/img/upload/video/training/"+vid[0]+"/images/test/"+str(id)+"_"+str(c)
+                frame.save(s+"_{:04d}.jpg".format(idx+1))
+                if (idx+1)<=90:
+                	frame.save(s1+"_{:04d}.jpg".format(idx+1))
+                if (idx+1)<=10:
+                	frame.save(s2+"_{:04d}.jpg".format(idx+1))
+                x=str(id)+"_"+str(c)+"_{:04d}.jpg".format(idx+1)
+                order=idx+1
+                label=str(id)+"_"+str(c)+"_{:04d}".format(idx+1)
+                insert.training_images(idc,vvid,x,label,c,"Finished")
+            update.video_collection(c,order,video)
+            vv=video.split(".")
+            image_to_xml_test(str(vv[0]))
+            image_to_xml_train(str(vv[0]))
+            for dir in ['test','train']:
+            	image_path = os.path.join(os.getcwd(), 'static/img/upload/video/training/{}/images/{}'.format(f,dir))
+            	xml_df = xml_to_csv(image_path)
+            	xml_df.to_csv('static/img/upload/video/training/{}/data/{}_labels.csv'.format(f,dir), index=None)            
+    return "Finished"    
 @app.route("/api/video_module",methods=['POST','GET'])    
 def api_video_module():
     id=request.form['id']   
@@ -141,6 +301,12 @@ def api_video_module():
     dat=cursor.fetchall()
     duration =  mp.VideoFileClip("static/img/upload/video/"+new).duration
     dur=int(duration)
+    vid=new.split(".")
+    os.mkdir('static/img/upload/video/training/'+str(vid[0]),0777)
+    os.mkdir('static/img/upload/video/training/'+str(vid[0])+'/data',0777)
+    os.mkdir('static/img/upload/video/training/'+str(vid[0])+'/images',0777)
+    os.mkdir('static/img/upload/video/training/'+str(vid[0])+'/images/test',0777)
+    os.mkdir('static/img/upload/video/training/'+str(vid[0])+'/images/train',0777)    
     insert.video_collection(id,new,label,"Pending",dur)
     # api_videotoimage(new,id,id)
     # insert.video_collection(app.config['video'])
@@ -164,15 +330,30 @@ def videotoimage(video,id,vvid):
     c=c[0][0]+1
     print video
     print c
+    f=video.split(".")[0]
     with closing(VideoSequence("static/img/upload/video/"+video)) as frames:
         for idx, frame in enumerate(frames[0:]):
                 s="static/img/upload/img/"+str(id)+"_"+str(c)
-                frame.save(s+"_{:04d}.jpg".format(idx))
-                x=str(id)+"_"+str(c)+"_{:04d}.jpg".format(idx)
-                label=str(id)+"_"+str(c)+"_{:04d}".format(idx)                
+                vid=video.split(".")
+                s1="static/img/upload/video/training/"+vid[0]+"/images/train/"+str(id)+"_"+str(c)
+                s2="static/img/upload/video/training/"+vid[0]+"/images/test/"+str(id)+"_"+str(c)
+                frame.save(s+"_{:04d}.jpg".format(idx+1))
+                if (idx+1)<=90:
+                	frame.save(s1+"_{:04d}.jpg".format(idx+1))
+                if (idx+1)<=10:
+                	frame.save(s2+"_{:04d}.jpg".format(idx+1))
+                x=str(id)+"_"+str(c)+"_{:04d}.jpg".format(idx+1)
+                label=str(id)+"_"+str(c)+"_{:04d}".format(idx+1)                
                 order=idx+1
                 insert.training_images(id,vvid,x,label,c,"Finished")
         update.video_collection(c,order,video)
+        vv=video.split(".")
+        image_to_xml_test(str(vv[0]))
+        image_to_xml_train(str(vv[0]))
+        for dir in ['test','train']:
+        	image_path = os.path.join(os.getcwd(), 'static/img/upload/video/training/{}/images/{}'.format(f,dir))
+        	xml_df = xml_to_csv(image_path)
+        	xml_df.to_csv('static/img/upload/video/training/{}/data/{}_labels.csv'.format(f,dir), index=None)        
 	return "success"
 # @app.route("/video_upload", methods=['POST', 'GET'])
 # def video_upload():
@@ -246,7 +427,13 @@ def video_upload():
     new1=os.path.join(app.config['video'],new)
     os.rename(old,new1)
     duration =  mp.VideoFileClip("static/img/upload/video/"+new).duration
-    dur=int(duration)    
+    dur=int(duration)
+    vid=new.split(".")
+    os.mkdir('static/img/upload/video/training/'+str(vid[0]),0777)
+    os.mkdir('static/img/upload/video/training/'+str(vid[0])+'/data',0777)
+    os.mkdir('static/img/upload/video/training/'+str(vid[0])+'/images',0777)
+    os.mkdir('static/img/upload/video/training/'+str(vid[0])+'/images/test',0777)
+    os.mkdir('static/img/upload/video/training/'+str(vid[0])+'/images/train',0777)     
     vvid=insert.video_collection(dat,new,label,"Finished",dur)
     videotoimage(new,dat,vvid)
     return redirect("/model")
@@ -274,6 +461,12 @@ def existing_video_update():
     dat=cursor.fetchall()
     duration =  mp.VideoFileClip("static/img/upload/video/"+new).duration
     dur=int(duration)
+    vid=new.split(".")
+    os.mkdir('static/img/upload/video/training/'+str(vid[0]),0777)
+    os.mkdir('static/img/upload/video/training/'+str(vid[0])+'/data',0777)
+    os.mkdir('static/img/upload/video/training/'+str(vid[0])+'/images',0777)
+    os.mkdir('static/img/upload/video/training/'+str(vid[0])+'/images/test',0777)    
+    os.mkdir('static/img/upload/video/training/'+str(vid[0])+'/images/train',0777)
     vvid=insert.video_collection(id,new,label,"Pending",dur)
     # api_videotoimage(new,id,id)
     # insert.video_collection(app.config['video'])    
@@ -366,7 +559,7 @@ def video_pending_update():
     path=data.get("path")
     vvid=data.get("vvid")
     print ids,path
-    status=api_videotoimage(path,ids,ids,vvid)
+    status=api_videotoimage_new(path,ids,ids,vvid)
     cursor.execute("UPDATE video_collection SET status='%s' WHERE id='%s'"%(status,vvid))
     con.commit()
     return jsonify({"succ":"Updated successfully"})
@@ -446,7 +639,9 @@ def video_delete():
     print dd,name        
     cursor.execute("DELETE from `video_collection` WHERE id='%s'"%(dd))
     con.commit()
+    h=name.split(".")
     os.system("rm -r static/img/upload/video/%s"%(name))
+    os.system("rm -r static/img/upload/video/training/"+str(h[0]))
     cursor.execute("SELECT image_path from training_images where video_id=%s"%(dd))
     for x in cursor.fetchall():
 		nam=x[0]
@@ -472,6 +667,8 @@ def model_data_delete():
         os.system("rm -r static/img/upload/img/%s"%(x[0]))
     cursor.execute("SELECT video_path from video_collection where instruction_id=%s"%(dd))    
     for y in cursor.fetchall():
+    	h=y[0].split(".")
+    	os.system("rm -r static/img/upload/video/training/"+str(h[0]))
         os.system("rm -r static/img/upload/video/%s"%(y[0]))
 
     cursor.execute("DELETE from `training_images` WHERE instruction_id=%s"%(dd))
