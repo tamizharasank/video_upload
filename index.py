@@ -246,6 +246,10 @@ def api_videotoimage(video,id,idc,vvid):
             	image_path = os.path.join(os.getcwd(), 'static/img/upload/video/training/{}/images/{}'.format(f,dir))
             	xml_df = xml_to_csv(image_path)
             	xml_df.to_csv('static/img/upload/video/training/{}/data/{}_labels.csv'.format(f,dir), index=None)
+            
+            os.system("python generate_tfrecord.py --csv_input=static/img/upload/video/training/{}/data/train_labels.csv  --output_path=static/img/upload/video/training/{}/data/train.record".format(f,f))
+            os.system("python generate_tfrecord.py --csv_input=static/img/upload/video/training/{}/data/test_labels.csv  --output_path=static/img/upload/video/training/{}/data/test.record".format(f,f))
+            
     return "Finished"
 
 @app.route("/api/api_videoto_image_new",methods=['POST','GET'])
@@ -278,7 +282,10 @@ def api_videotoimage_new(video,id,idc,vvid):
             for dir in ['test','train']:
             	image_path = os.path.join(os.getcwd(), 'static/img/upload/video/training/{}/images/{}'.format(f,dir))
             	xml_df = xml_to_csv(image_path)
-            	xml_df.to_csv('static/img/upload/video/training/{}/data/{}_labels.csv'.format(f,dir), index=None)            
+            	xml_df.to_csv('static/img/upload/video/training/{}/data/{}_labels.csv'.format(f,dir), index=None) 
+            
+            os.system("python generate_tfrecord.py --csv_input=static/img/upload/video/training/{}/data/train_labels.csv  --output_path=static/img/upload/video/training/{}/data/train.record".format(f,f))
+            os.system("python generate_tfrecord.py --csv_input=static/img/upload/video/training/{}/data/test_labels.csv  --output_path=static/img/upload/video/training/{}/data/test.record".format(f,f))           
     return "Finished"    
 @app.route("/api/video_module",methods=['POST','GET'])    
 def api_video_module():
@@ -353,7 +360,10 @@ def videotoimage(video,id,vvid):
         for dir in ['test','train']:
         	image_path = os.path.join(os.getcwd(), 'static/img/upload/video/training/{}/images/{}'.format(f,dir))
         	xml_df = xml_to_csv(image_path)
-        	xml_df.to_csv('static/img/upload/video/training/{}/data/{}_labels.csv'.format(f,dir), index=None)        
+        	xml_df.to_csv('static/img/upload/video/training/{}/data/{}_labels.csv'.format(f,dir), index=None)
+        
+        os.system("python generate_tfrecord.py --csv_input=static/img/upload/video/training/{}/data/train_labels.csv  --output_path=static/img/upload/video/training/{}/data/train.record".format(f,f))        
+        os.system("python generate_tfrecord.py --csv_input=static/img/upload/video/training/{}/data/test_labels.csv  --output_path=static/img/upload/video/training/{}/data/test.record".format(f,f))
 	return "success"
 # @app.route("/video_upload", methods=['POST', 'GET'])
 # def video_upload():
@@ -402,6 +412,12 @@ def reload():
 def video_upload():
     name=request.form['name']
     uploaded=request.form['label']
+    ded=select.api_instruction_select()
+    for x in xrange(0,len(ded)):
+    	if str(ded[x][0])==name:
+    		return render_template("video_upload.html",data="name is already exists")
+    	else:
+    		print "None"
 
     # image upload
     # files = request.files['image']
