@@ -16,8 +16,12 @@ import io
 import pandas as pd
 import tensorflow as tf
 
+import sys
+
+sys.path.append('models/research/object_detection')
 from PIL import Image
 from object_detection.utils import dataset_util
+
 from collections import namedtuple, OrderedDict
 
 flags = tf.app.flags
@@ -28,7 +32,7 @@ FLAGS = flags.FLAGS
 
 # TO-DO replace this with label map
 def class_text_to_int(row_label):
-    if row_label == 'football':
+    if row_label == 'iphone mobile':
         return 1
     else:
         None
@@ -82,17 +86,38 @@ def create_tf_example(group, path):
 
 
 def main(_):
-    writer = tf.python_io.TFRecordWriter(FLAGS.output_path)
-    path = os.path.join(os.getcwd(), 'images')
-    examples = pd.read_csv(FLAGS.csv_input)
-    grouped = split(examples, 'filename')
-    for group in grouped:
-        tf_example = create_tf_example(group, path)
-        writer.write(tf_example.SerializeToString())
-
-    writer.close()
     output_path = os.path.join(os.getcwd(), FLAGS.output_path)
-    print('Successfully created the TFRecords: {}'.format(output_path))
+    fn=output_path.split("/")[::-1][2]
+    # print(fn)
+    oo=output_path.split("/")[::-1][0]
+    if (oo.split(".")[0])=='test':
+        
+        writer = tf.python_io.TFRecordWriter(FLAGS.output_path)
+        path = os.path.join(os.getcwd(), 'static/img/upload/video/training/{}/images/test'.format(fn))
+        examples = pd.read_csv(FLAGS.csv_input)
+        grouped = split(examples, 'filename')
+        for group in grouped:
+            tf_example = create_tf_example(group, path)
+            writer.write(tf_example.SerializeToString())
+
+        writer.close()
+        output_path = os.path.join(os.getcwd(), FLAGS.output_path)
+        print('Successfully created the TFRecords: {}'.format(output_path))        
+        # print(oo.split(".")[0])
+    else:
+        writer = tf.python_io.TFRecordWriter(FLAGS.output_path)
+        path = os.path.join(os.getcwd(), 'static/img/upload/video/training/{}/images/train'.format(fn))
+        examples = pd.read_csv(FLAGS.csv_input)
+        grouped = split(examples, 'filename')
+        for group in grouped:
+            tf_example = create_tf_example(group, path)
+            writer.write(tf_example.SerializeToString())
+
+        writer.close()
+        output_path = os.path.join(os.getcwd(), FLAGS.output_path)
+        
+        print('Successfully created the TFRecords: {}'.format(output_path))        
+        # print(oo.split(".")[0])
 
 
 if __name__ == '__main__':
