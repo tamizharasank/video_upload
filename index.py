@@ -319,7 +319,7 @@ def api_video_module():
     # insert.video_collection(app.config['video'])
 
 
-
+    con.commit()
     return jsonify({"error":"false","id":id,"msg":"video Uploaded successfully"})
 
 
@@ -361,7 +361,7 @@ def videotoimage(video,id,vvid):
         	image_path = os.path.join(os.getcwd(), 'static/img/upload/video/training/{}/images/{}'.format(f,dir))
         	xml_df = xml_to_csv(image_path)
         	xml_df.to_csv('static/img/upload/video/training/{}/data/{}_labels.csv'.format(f,dir), index=None)
-        
+
         os.system("python generate_tfrecord.py --csv_input=static/img/upload/video/training/{}/data/train_labels.csv  --output_path=static/img/upload/video/training/{}/data/train.record".format(f,f))        
         os.system("python generate_tfrecord.py --csv_input=static/img/upload/video/training/{}/data/test_labels.csv  --output_path=static/img/upload/video/training/{}/data/test.record".format(f,f))
 	return "success"
