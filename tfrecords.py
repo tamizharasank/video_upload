@@ -27,12 +27,14 @@ from collections import namedtuple, OrderedDict
 flags = tf.app.flags
 flags.DEFINE_string('csv_input', '', 'Path to the CSV input')
 flags.DEFINE_string('output_path', '', 'Path to output TFRecord')
+flags.DEFINE_string('file_name','','filename of a model')
 FLAGS = flags.FLAGS
 
 
 # TO-DO replace this with label map
 def class_text_to_int(row_label):
-    if row_label == 'iphone mobile':
+    n=FLAGS.file_name
+    if row_label == n:
         return 1
     else:
         None
@@ -102,7 +104,9 @@ def main(_):
 
         writer.close()
         output_path = os.path.join(os.getcwd(), FLAGS.output_path)
-        print('Successfully created the TFRecords: {}'.format(output_path))        
+        print('Successfully created the TFRecords: {}'.format(output_path))
+        # n=FLAGS.file_name
+        # print(type(n))        
         # print(oo.split(".")[0])
     else:
         writer = tf.python_io.TFRecordWriter(FLAGS.output_path)
@@ -118,6 +122,8 @@ def main(_):
         
         print('Successfully created the TFRecords: {}'.format(output_path))        
         # print(oo.split(".")[0])
+        # n=FLAGS.file_name
+        # print(n)
 
 
 if __name__ == '__main__':
