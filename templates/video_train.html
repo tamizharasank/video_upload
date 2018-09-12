@@ -19,7 +19,7 @@
       <link rel="stylesheet" type="text/css" href="https://www.jqueryscript.net/demo/Customizable-Loading-Modal-Plugin/css/modal-loading-animate.css" /> 
 </head>
 
-<body ng-controller="customersCtrl">
+<body ng-controller="customersCtrl" onload="loading()">
   <div class="wrapper ">
     <div class="sidebar" data-color="purple" data-background-color="white" data-image="../static/img/sidebar-1.jpg">
       <!--
@@ -34,8 +34,8 @@
       </div>
       <div class="sidebar-wrapper">
         <ul class="nav">
-                    
-          <li class="nav-item active  ">
+        
+          <li class="nav-item ">
             <a class="nav-link" href="/view">
               <i class="material-icons">dashboard</i>
               <p>Dashboard</p>
@@ -46,8 +46,8 @@
               <i class="material-icons">home</i>
               <p>Video_upload</p>
             </a>
-          </li>          
-          <li class="nav-item ">
+          </li>              
+          <li class="nav-item">
             <a class="nav-link" href="/model">
               <i class="material-icons">reorder</i>
               <p>Model</p>
@@ -58,19 +58,13 @@
               <i class="material-icons">autorenew</i>
               <p>video pending</p>
             </a>
-          </li>        
-                    <li class="nav-item ">
+          </li>          
+          <li class="nav-item active">
             <a class="nav-link" href="/video_training">
               <i class="material-icons">perm_media</i>
               <p>Train</p>
             </a>
-          </li>  
-          <!-- <li class="nav-item ">
-            <a class="nav-link" href="/videos">
-              <i class="material-icons">perm_media</i>
-              <p>Videos</p>
-            </a>
-          </li>
+          </li><!-- 
           <li class="nav-item ">
             <a class="nav-link" href="/images">
               <i class="material-icons">picture_in_picture</i>
@@ -85,7 +79,7 @@
       <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
         <div class="container-fluid">
           <div class="navbar-wrapper">
-            <a class="navbar-brand" href="#">Dashboard</a>
+            <a class="navbar-brand" href="#">video Training</a>
           </div>
           <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
             <span class="sr-only">Toggle navigation</span>
@@ -94,7 +88,7 @@
             <span class="navbar-toggler-icon icon-bar"></span>
           </button>
           <div class="collapse navbar-collapse justify-content-end">
-            <!-- <form class="navbar-form">
+           <!--  <form class="navbar-form">
               <div class="input-group no-border">
                 <input type="text" value="" class="form-control" placeholder="Search...">
                 <button type="submit" class="btn btn-white btn-round btn-just-icon">
@@ -136,14 +130,14 @@
                   </p>
                 </a>
               </li> -->
-              <li class="nav-item">
+                                          <li class="nav-item">
                 <a class="nav-link" href="/logout">
                   <i class="material-icons">exit_to_app</i>
                   <p class="d-lg-none d-md-block">
                     logout
                   </p>
                 </a>
-              </li>              
+              </li>
             </ul>
           </div>
         </div>
@@ -151,63 +145,137 @@
       <!-- End Navbar -->
       <div class="content">
         <div class="container-fluid">
+
+
+
+
+
           <div class="row">
-            <div class="col-lg-3 col-md-6 col-sm-6">
-              <div class="card card-stats">
-                <div class="card-header card-header-warning card-header-icon">
-                  <div class="card-icon">
-                    <i class="material-icons">content_copy</i>
-                  </div>
-                  <p class="card-category">No of Module</p>
-                  <h3 class="card-title">{a message[0].id a} </h3>
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-header card-header-primary">
+                  <h4 class="card-title ">Training View Table</h4>
+                  <p class="card-category"></p>
                 </div>
-                <div class="card-footer">
+                <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead class=" text-primary">
+                        <th>
+                          S.No
+                        </th>
+                        <th>
+                          Model Name
+                        </th>
+ <th>
+                          Process ID
+                        </th>
+                        <th>
+                          Action
+                        </th>
+                      </thead>
+                      <tbody>
+                        <tr ng-repeat="m in model">
+                          <td>
+                            {a $index+1 a}
+                          </td>
+                          <td>
+                            {a m.instruction_name a}
+                          </td>
+  <td>
+                            {a m.kill_id a}
+                          </td>
+                          <td>
+                            <!-- <a href="/train_video"><i class="material-icons">trending_up</i>TRAIN</a>&emsp; -->
+                            <!-- <a href="/train_video"><i class="material-icons">trending_up</i>STOP</a>&emsp; -->
+                            <!-- <button class="btn btn-default disabled">Disabled</button> -->
+                            <button ng-if="m.status=='NOT' && m.dis=='stop'" ng-click="train(m.id,m.instruction_name,m.instruction_id)" class="btn btn-primary">Train</button>
+                            <button ng-if="m.status=='T' && m.dis=='start'" ng-click="stop(m.instruction_id,m.instruction_name,m.kill_id)" class="btn btn-danger">Stop</button>
+
+                          </td>
+                        </tr>
+                        
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="col-lg-3 col-md-6 col-sm-6">
-              <div class="card card-stats">
-                <div class="card-header card-header-success card-header-icon">
-                  <div class="card-icon">
-                    <i class="material-icons">store</i>
-                  </div>
-                  <p class="card-category">No of Videos</p>
-                  <h3 class="card-title">{a message[0].id1 a}</h3>
-                </div>
-                <div class="card-footer">
-
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
+            </div>            
     </div>
   </div>
-  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js">
-</script>
+<!--    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js">
+</script> -->
+<script src="http://code.angularjs.org/1.2.9/angular.js"></script>
+
 <script>
 var uid = 1;
 var app = angular.module('myApp', []);
+
+
    app.controller('customersCtrl', function($scope, $http,$location,$window) {
+    // $window.location.reload();
 
 
   // alert(datas);
-      loading();
-  
-  $http.get("/dashboard_data").success(function(data)
+  $http.get("/get_training_data").success(function(data)
   {
-    $scope.message=data;
-    // alert(JSON.stringify($scope.message));
-      
-        
+    $scope.model=data;
+    // alert(JSON.stringify($scope.model));
+
+  });
+
+$scope.train = function train(id,n,rid) {
+  $scope.tr = {"id":id,"name":n,"rid":rid};
+    alert(JSON.stringify($scope.tr));
+      $http.post("/training_data_update",$scope.tr).success(function(data)
+  {
+    $scope.dd=data;
+    alert(data);
+  // alert(JSON.stringify($scope.noti));
+
+          
+    $window.location.reload();
+
 
   });
 
 
+}
+$scope.stop = function stop(id,n,k) {
+  $scope.st = {"id":id,"name":n,"kill":k};
+    // alert(JSON.stringify($scope.st));
+      $http.post("/training_data_update_stop",$scope.st).success(function(data)
+  {
+    $scope.dd=data;
+    alert(data);
+  // alert(JSON.stringify($scope.noti));
 
+          
+    $window.location.reload();
+
+
+  });
+}
+
+
+$scope.delet = function delet(id) {
+  
+  $scope.del = {"id":id};
+  alert("Confirm to delete");
+
+  $http.post("/model_data_delete",$scope.del).success(function(data)
+  {
+    $scope.dd=data;
+    alert(data);
+  // alert(JSON.stringify($scope.noti));
+
+          loadingOut1(loading);
+    $window.location.reload();
+
+
+  });
+
+}
 
 
 
@@ -223,11 +291,11 @@ var app = angular.module('myApp', []);
 </script>
   <!--   Core JS Files   -->
   <script src="../static/js/core/jquery.min.js" type="text/javascript"></script>
-    <script type="text/javascript" src="https://www.jqueryscript.net/demo/Customizable-Loading-Modal-Plugin/js/modal-loading.js"></script>
+  <script type="text/javascript" src="https://www.jqueryscript.net/demo/Customizable-Loading-Modal-Plugin/js/modal-loading.js"></script>
         <script type="text/javascript">
-           function loadingOut(loading) {
-           setTimeout(() => loading.out(),2000);
-           }
+         function loadingOut(loading) {
+          setTimeout(() => loading.out(), 3000);
+         }
                  function loading() {
          
           var loading = new Loading({
@@ -238,8 +306,20 @@ var app = angular.module('myApp', []);
          
           loadingOut(loading);
          }
+              function loadingOut1(loading) {
+          setTimeout(() => loading.out(), 0);
+         }
+                 function loading1() {
          
+          var loading1 = new Loading({
+            direction: 'hor',
+              defaultApply:   true,
+        discription:      'Deleting...'
+          });
+         
+         }
       </script>
+
   <script src="../static/js/core/popper.min.js" type="text/javascript"></script>
   <script src="../static/js/core/bootstrap-material-design.min.js" type="text/javascript"></script>
   <script src="../static/js/plugins/perfect-scrollbar.jquery.min.js"></script>

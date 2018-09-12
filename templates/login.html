@@ -4,15 +4,22 @@
   
 
   <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
-
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <title>
+    Cognitive AR
+  </title>
+  <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
   <!--     Fonts and icons     -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" />
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
-
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
   <!-- CSS Files -->
-    <link href="../static/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="../static/css/material-kit.css" rel="stylesheet"/>
+  <link href="../static/css/material-dashboard.css?v=2.1.0" rel="stylesheet" />
+  <!-- CSS Just for demo purpose, don't include it in your project -->
+  <link href="../static/demo/demo.css" rel="stylesheet" />
+   <link rel="stylesheet" type="text/css" href="https://www.jqueryscript.net/demo/Customizable-Loading-Modal-Plugin/css/modal-loading.css" />
+      <link rel="stylesheet" type="text/css" href="https://www.jqueryscript.net/demo/Customizable-Loading-Modal-Plugin/css/modal-loading-animate.css" /> 
 
 <style type="text/css">
   @media (min-width: 320px) and (max-width: 2140px){
@@ -21,15 +28,69 @@
 </style>
 </head>
 
-<body class="signup-page" ng-controller="customersCtrl">
+<body ng-controller="customersCtrl">
   
 
     <div class="wrapper">
     <div class="header header-filter">
       <div class="container">
-        <div>
-          <div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3">
-            <div class="card card-signu">
+        <div class="row">
+          <div class="col-md-3"></div>
+          <div class="col-md-6" style="margin-top: 10%;">
+
+
+<div class="card card-signup">
+        <div class="modal-header" style="display: block;">
+          <div class="header header-primary text-center">
+            <h2 class="card-title">Cognitive AR</h2>
+            
+          </div>
+        </div>
+        <div class="modal-body">
+          <form class="form" method="" action="">
+            
+            <div class="card-content">
+
+              <div class="input-grou">
+                <span class="input-group-addon">
+                  <i class="material-icons">face</i>
+                </span>
+                <div class="form-group"><input type="text" ng-model="user_name" required="required" class="form-control" placeholder="User Name..."><span class="material-input"></span></div>
+              </div>
+
+              <div class="input-grou">
+                <span class="input-group-addon">
+                  <i class="material-icons">lock_outline</i>
+                </span>
+                <div class="form-group"><input type="password" ng-model="password" required="required" placeholder="Password..." class="form-control"><span class="material-input"></span></div>
+              </div>
+
+            </div>
+      
+        <div class="modal-footer text-center">
+       <div class="alert alert-danger text-center" style="margin-right: 10%;" ng-if="error =error">
+    <div class="container-fluid" >
+    <div class="alert-icon">
+      <i class="material-icons">error_outline</i>
+    </div>
+<!--     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true"><i class="material-icons">clear</i></span>
+    </button> -->
+      <b>Error Alert:<p ng-bind="error"></p></b>
+    </div>
+</div> 
+        </div>
+        
+
+
+                <center> <button type="submit" class="btn btn-simple btn-primary btn-lg" ng-click="check(user_name,password,'{{id}}')">Login</button> </center>
+                  
+          </form>          
+        </div>
+      </div>
+
+      <!--     <div class="card">
+            <center>
               <form class="form" method="" action="">
                 <div class="header header-primary text-center">
                   <h4>Sign In</h4>
@@ -39,18 +100,14 @@
                 <div class="content">
 
                   <div class="input-group">
-                    <span class="input-group-addon">
-                      <i class="material-icons">face</i>
-                    </span>
-                    <input type="text" class="form-control" placeholder="User Id..." ng-model="user_name" required="required" />
+                    
+                    <input type="text" class="form-control" placeholder="User Name..." ng-model="user_name" required="required" />
                   </div>
 
                   
 
                   <div class="input-group">
-                    <span class="input-group-addon">
-                      <i class="material-icons">lock_outline</i>
-                    </span>
+                    
                     <input type="password" placeholder="Password..." class="form-control" ng-model="password" required="required" />
                   </div>
 
@@ -73,9 +130,9 @@
                 </div>
               </form>
 
+</center>
 
-
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -109,9 +166,14 @@ var uid = 1;
 var app = angular.module('myApp', []);
    app.controller('customersCtrl', function($scope, $http,$location,$window) {
 
-$scope.check = function(user_name,password){
-  var datas={"user_name":user_name,"password":password};
-  // alert(datas);
+$scope.check = function(user_name,password,id){
+  // alert(JSON.stringify(datas));
+  window.localStorage.setItem("access",id);
+  var neww = window.localStorage.getItem('access');
+  // alert(neww);
+  var datas={"user_name":user_name,"password":password,"id":neww};
+
+  window.localStorage.clear();
   $http.post("/login_validate",datas).success(function(data)
   {
     $scope.message=data;
@@ -121,11 +183,13 @@ $scope.check = function(user_name,password){
       
 
       // $window.location.href="/staff";
-      $window.location.href="/dashboard";
+      $window.location.href="/view";
 
     }
     else { 
-      $scope.error="Your Entered UserId and Password is Invalid!!!";
+      $scope.error="please enter a valid Username and Password";
+      // $window.location.href="/logout";
+
        }
   });
   
